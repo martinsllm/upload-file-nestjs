@@ -1,8 +1,11 @@
 import {
   Controller,
+  Delete,
   Get,
+  HttpCode,
   Param,
   Post,
+  Put,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -24,8 +27,21 @@ export class UploadController {
     return this.uploadService.findAll();
   }
 
-  @Get('/:id')
+  @Get(':id')
   findOne(@Param('id') id: number) {
     return this.uploadService.findOne(id);
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  remove(@Param('id') id: number) {
+    return this.uploadService.remove(id);
+  }
+
+  @Put(':id')
+  @HttpCode(204)
+  @UseInterceptors(FileInterceptor('file'))
+  update(@Param('id') id: number, @UploadedFile() file: Express.Multer.File) {
+    return this.uploadService.update(id, file);
   }
 }

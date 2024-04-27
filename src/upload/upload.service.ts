@@ -34,4 +34,19 @@ export class UploadService {
 
     return file;
   }
+
+  async remove(id: number): Promise<void> {
+    await this.findOne(id);
+    await this.uploadRepository.delete(id);
+  }
+
+  async update(id: number, file: Express.Multer.File): Promise<void> {
+    const _file = await this.findOne(id);
+
+    _file.contentLength = file.size;
+    _file.contentType = file.mimetype;
+    _file.url = `data:image/jpeg;base64,${file.buffer.toString('base64')}`;
+
+    await this.uploadRepository.update(id, _file);
+  }
 }

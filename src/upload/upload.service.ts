@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Upload } from './entities/upload.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -11,7 +11,7 @@ export class UploadService {
     private readonly uploadRepository: Repository<Upload>,
   ) {}
 
-  async saveFile(file: Express.Multer.File) {
+  async saveFile(file: Express.Multer.File): Promise<Upload> {
     const _file = new Upload();
     _file.fileName = uuidv4();
     _file.contentLength = file.size;
@@ -19,5 +19,19 @@ export class UploadService {
     _file.url = `data:image/jpeg;base64,${file.buffer.toString('base64')}`;
 
     return await this.uploadRepository.save(_file);
+  }
+
+  async findAll(): Promise<Upload[]> {
+    return this.uploadRepository.find();
+  }
+
+  async findOne(id: number): Promise<Upload> {
+    const file = await this.uploadRepository.findOneBy({ id });
+
+    if (!file) {
+      throw new NotFoundException('File not found!');
+    }
+
+    return file;
   }
 }

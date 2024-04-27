@@ -1,5 +1,7 @@
 import {
   Controller,
+  Get,
+  Param,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -15,5 +17,15 @@ export class UploadController {
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@UploadedFile() file: Express.Multer.File) {
     return this.uploadService.saveFile(file);
+  }
+
+  @Get()
+  findAll() {
+    return this.uploadService.findAll();
+  }
+
+  @Get('/:id')
+  findOne(@Param('id') id: number) {
+    return this.uploadService.findOne(id);
   }
 }
